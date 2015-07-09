@@ -63,11 +63,24 @@ namespace CustomerData.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.客戶聯絡人.Add(客戶聯絡人);
+                var isExistEmail = db.客戶聯絡人
+                    .Where(x => x.客戶Id == 客戶聯絡人.客戶Id)
+                    .Where(x => !x.是否已刪除)
+                    .Select(x => x.Email)
+                    .Any(x => x == 客戶聯絡人.Email);
 
-                db.SaveChanges();
+                if (!isExistEmail)
+                {
+                    db.客戶聯絡人.Add(客戶聯絡人);
 
-                return RedirectToAction("Index");
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("Email", "Email 已存在");
+                }
             }
 
             SetModify();

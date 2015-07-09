@@ -68,7 +68,7 @@ namespace CustomerData.Models
             /// </summary>        
             [DisplayName("手機")]
             [MaxLength(50, ErrorMessage = "手機 cannot be longer than 50 characters")]
-            [RegularExpression(@"\d{4}-\d{6}", ErrorMessage = "must be 09XX-XXXXXX")]
+            [RegularExpression(@"^\d{4}-\d{6}$", ErrorMessage = "must be 09XX-XXXXXX")]
             public string 手機 { get; set; }
 
 
