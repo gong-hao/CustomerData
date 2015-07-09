@@ -52,7 +52,7 @@ namespace CustomerData.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email,是否已刪除")] 客戶資料 客戶資料)
+        public ActionResult Create([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +77,7 @@ namespace CustomerData.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email,是否已刪除")] 客戶資料 客戶資料)
+        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
         {
             if (ModelState.IsValid)
             {
@@ -105,6 +105,10 @@ namespace CustomerData.Controllers
             客戶資料 客戶資料 = db.客戶資料.Find(id);
 
             客戶資料.是否已刪除 = true;
+
+            客戶資料.客戶銀行資訊.ToList().ForEach(x => x.是否已刪除 = true);
+
+            客戶資料.客戶聯絡人.ToList().ForEach(x => x.是否已刪除 = true);
 
             db.SaveChanges();
 
