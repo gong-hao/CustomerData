@@ -100,6 +100,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Models\MetaData.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MetaData.cs</LastGenOutput>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -149,17 +153,34 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DB.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\MetaData.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MetaData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\vw_簡易報表.cs">
       <DependentUpon>DB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\vw_簡易報表Metadata.cs">
+      <DependentUpon>MetaData.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\客戶聯絡人.cs">
       <DependentUpon>DB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\客戶聯絡人Metadata.cs">
+      <DependentUpon>MetaData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\客戶資料.cs">
       <DependentUpon>DB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\客戶資料Metadata.cs">
+      <DependentUpon>MetaData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\客戶銀行資訊.cs">
       <DependentUpon>DB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\客戶銀行資訊Metadata.cs">
+      <DependentUpon>MetaData.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
