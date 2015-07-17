@@ -8,7 +8,7 @@ namespace CustomerData.Controllers
 {
     public class 客戶銀行資訊Controller : Controller
     {
-        private 客戶資料Entities db = new 客戶資料Entities();
+        private I客戶銀行資訊Repository 客戶銀行資訊Repository = RepositoryHelper.Get客戶銀行資訊Repository();
 
         private ActionResult FindById(int? id)
         {
@@ -17,7 +17,7 @@ namespace CustomerData.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = 客戶銀行資訊Repository.Find(id);
 
             if (客戶銀行資訊 == null || 客戶銀行資訊.是否已刪除)
             {
@@ -29,24 +29,23 @@ namespace CustomerData.Controllers
 
         private void SetModify()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            I客戶資料Repository 客戶資料Repository = RepositoryHelper.Get客戶資料Repository();
+
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.All(), "Id", "客戶名稱");
         }
 
-        // GET: 客戶銀行資訊
         public ActionResult Index()
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料).Where(x => !x.是否已刪除);
+            var 客戶銀行資訊 = 客戶銀行資訊Repository.Where(x => !x.是否已刪除).Include(x => x.客戶資料);
 
             return View(客戶銀行資訊.ToList());
         }
 
-        // GET: 客戶銀行資訊/Details/5
         public ActionResult Details(int? id)
         {
             return FindById(id);
         }
 
-        // GET: 客戶銀行資訊/Create
         public ActionResult Create()
         {
             SetModify();
@@ -54,18 +53,13 @@ namespace CustomerData.Controllers
             return View();
         }
 
-        // POST: 客戶銀行資訊/Create
-        // 若要免於過量張貼攻擊，請啟用想要繫結的特定屬性，如需
-        // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Create(客戶銀行資訊 客戶銀行資訊)
         {
             if (ModelState.IsValid)
             {
-                db.客戶銀行資訊.Add(客戶銀行資訊);
-
-                db.SaveChanges();
+                客戶銀行資訊Repository.新增客戶銀行資訊(客戶銀行資訊);
 
                 return RedirectToAction("Index");
             }
@@ -75,7 +69,6 @@ namespace CustomerData.Controllers
             return View(客戶銀行資訊);
         }
 
-        // GET: 客戶銀行資訊/Edit/5
         public ActionResult Edit(int? id)
         {
             SetModify();
@@ -83,18 +76,13 @@ namespace CustomerData.Controllers
             return FindById(id);
         }
 
-        // POST: 客戶銀行資訊/Edit/5
-        // 若要免於過量張貼攻擊，請啟用想要繫結的特定屬性，如需
-        // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Edit(客戶銀行資訊 客戶銀行資訊)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶銀行資訊).State = EntityState.Modified;
-
-                db.SaveChanges();
+                客戶銀行資訊Repository.修改客戶銀行資訊(客戶銀行資訊);
 
                 return RedirectToAction("Index");
             }
@@ -104,22 +92,16 @@ namespace CustomerData.Controllers
             return View(客戶銀行資訊);
         }
 
-        // GET: 客戶銀行資訊/Delete/5
         public ActionResult Delete(int? id)
         {
             return FindById(id);
         }
 
-        // POST: 客戶銀行資訊/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-
-            客戶銀行資訊.是否已刪除 = true;
-
-            db.SaveChanges();
+            客戶銀行資訊Repository.刪除客戶銀行資訊(id);
 
             return RedirectToAction("Index");
         }
@@ -128,7 +110,7 @@ namespace CustomerData.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                客戶銀行資訊Repository.Dispose();
             }
 
             base.Dispose(disposing);

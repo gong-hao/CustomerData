@@ -8,7 +8,7 @@ namespace CustomerData.Controllers
 {
     public class 客戶聯絡人Controller : Controller
     {
-        private 客戶資料Entities db = new 客戶資料Entities();
+        private I客戶聯絡人Repository 客戶聯絡人Repository = RepositoryHelper.Get客戶聯絡人Repository();
 
         private ActionResult FindById(int? id)
         {
@@ -17,7 +17,7 @@ namespace CustomerData.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = 客戶聯絡人Repository.Find(id);
 
             if (客戶聯絡人 == null || 客戶聯絡人.是否已刪除)
             {
@@ -29,24 +29,23 @@ namespace CustomerData.Controllers
 
         private void SetModify()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            I客戶資料Repository 客戶資料Repository = RepositoryHelper.Get客戶資料Repository();
+
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.All(), "Id", "客戶名稱");
         }
 
-        // GET: 客戶聯絡人
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).Where(x => !x.是否已刪除);
+            var 客戶聯絡人 = 客戶聯絡人Repository.Where(x => !x.是否已刪除).Include(x => x.客戶資料);
 
             return View(客戶聯絡人.ToList());
         }
 
-        // GET: 客戶聯絡人/Details/5
         public ActionResult Details(int? id)
         {
             return FindById(id);
         }
 
-        // GET: 客戶聯絡人/Create
         public ActionResult Create()
         {
             SetModify();
@@ -54,26 +53,17 @@ namespace CustomerData.Controllers
             return View();
         }
 
-        // POST: 客戶聯絡人/Create
-        // 若要免於過量張貼攻擊，請啟用想要繫結的特定屬性，如需
-        // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Create(客戶聯絡人 客戶聯絡人)
         {
             if (ModelState.IsValid)
             {
-                var isExistEmail = db.客戶聯絡人
-                    .Where(x => x.客戶Id == 客戶聯絡人.客戶Id)
-                    .Where(x => !x.是否已刪除)
-                    .Select(x => x.Email)
-                    .Any(x => x == 客戶聯絡人.Email);
+                var isExistEmail = 客戶聯絡人Repository.信箱是否重複(客戶聯絡人);
 
                 if (!isExistEmail)
                 {
-                    db.客戶聯絡人.Add(客戶聯絡人);
-
-                    db.SaveChanges();
+                    客戶聯絡人Repository.新增客戶聯絡人(客戶聯絡人);
 
                     return RedirectToAction("Index");
                 }
@@ -88,7 +78,6 @@ namespace CustomerData.Controllers
             return View(客戶聯絡人);
         }
 
-        // GET: 客戶聯絡人/Edit/5
         public ActionResult Edit(int? id)
         {
             SetModify();
@@ -96,20 +85,24 @@ namespace CustomerData.Controllers
             return FindById(id);
         }
 
-        // POST: 客戶聯絡人/Edit/5
-        // 若要免於過量張貼攻擊，請啟用想要繫結的特定屬性，如需
-        // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Edit(客戶聯絡人 客戶聯絡人)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶聯絡人).State = EntityState.Modified;
+                var isExistEmail = 客戶聯絡人Repository.信箱是否重複(客戶聯絡人, isUpdate: true);
 
-                db.SaveChanges();
+                if (!isExistEmail)
+                {
+                    客戶聯絡人Repository.編輯客戶聯絡人(客戶聯絡人);
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("Email", "Email 已存在");
+                }
             }
 
             SetModify();
@@ -117,22 +110,16 @@ namespace CustomerData.Controllers
             return View(客戶聯絡人);
         }
 
-        // GET: 客戶聯絡人/Delete/5
         public ActionResult Delete(int? id)
         {
             return FindById(id);
         }
 
-        // POST: 客戶聯絡人/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-
-            客戶聯絡人.是否已刪除 = true;
-
-            db.SaveChanges();
+            客戶聯絡人Repository.刪除客戶聯絡人(id);
 
             return RedirectToAction("Index");
         }
@@ -141,7 +128,7 @@ namespace CustomerData.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                客戶聯絡人Repository.Dispose();
             }
 
             base.Dispose(disposing);
